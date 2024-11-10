@@ -1,74 +1,102 @@
-# Ex. No : 1	
-# IMPLEMENTATION OF SYMBOL TABLE 
-## Register Number :
-## Date : 
-## Developed by: PRIYADHARSHINI S.S
-## Register Number : 212223040156
-## Date : 14-09-2024
+# Ex. No : 4	
+# RECOGNITION OF A VALID VARIABLE WHICH STARTS WITH A LETTER FOLLOWED BY ANY NUMBER OF LETTERS OR DIGITS USING YACC
+## Register Number :2122230140156
+## Name :Priyadharshini S.S
+## Date : 06/11/2024
 
 ## AIM   
-To write a C program to implement a symbol table.
-@@ -17,9 +18,73 @@ To write a C program to implement a symbol table.
-8.	Stop the program. 
+To write a YACC program to recognize a valid variable which starts with a letter followed by any number of letters or digits.
+
+## ALGORITHM
+1.	Start the program.
+2.	Write a program in the vi editor and save it with .l extension.
+3.	In the lex program, write the translation rules for the keywords int, float and double and for the identifier.
+4.	Write a program in the vi editor and save it with .y extension.
+5.	Compile the lex program with lex compiler to produce output file as lex.yy.c. eg $ lex filename.l
+6.	Compile the yacc program with YACC compiler to produce output file as y.tab.c. eg $ yacc –d arith_id.y
+7.	Compile these with the C compiler as gcc lex.yy.c y.tab.c
+8.	Enter a statement as input and the valid variables are identified as output.
 
 ## PROGRAM
+## LEX CODE
 ```
+%{
+#include "y.tab.h"  // Include the YACC header file for token definitions
+%}
+
+%%
+
+"int"           { return INT; }
+"float"         { return FLOAT; }
+"double"        { return DOUBLE; }
+[a-zA-Z][a-zA-Z0-9]* { 
+    printf("\nIdentifier is %s", yytext);
+    return ID;
+}
+[ \t\n]+        { /* Ignore whitespace */ }
+.               { return yytext[0]; }
+
+%%
+
+int yywrap() {
+    return 1;  // Indicate end of input for LEX
+}
+```
+## YACC CODE
+```
+%{
 #include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-#include <stdlib.h> 
-#define MAX_EXPRESSION_SIZE 100
+#include <stdlib.h>
+%}
+
+%token ID INT FLOAT DOUBLE  // Define tokens
+
+%%
+
+D: T L
+;
+
+L: L ',' ID
+ | ID
+;
+
+T: INT
+ | FLOAT
+ | DOUBLE
+;
+
+%%
+
+extern FILE *yyin;  // Declare input file pointer
+
 int main() {
-int i = 0, j = 0, x = 0, n, flag = 0;
-void *add[5];
-char b[MAX_EXPRESSION_SIZE], d[15], c, srch;
-printf("Enter the Expression terminated by $: ");
-while ((c = getchar()) != '$' && i < MAX_EXPRESSION_SIZE - 1) {
-    b[i++] = c;
-}
-b[i] = '\0'; 
-n = i - 1;  
-printf("Given Expression: %s\n", b);
-printf("\nSymbol Table\n");
-printf("Symbol\taddr\ttype\n");
-for (j = 0; j <= n; j++) {
-    c = b[j];
-    if (isalpha((unsigned char)c)) {
-        if (j == n || b[j + 1] == '+' || b[j + 1] == '-' || b[j + 1] == '*' || b[j + 1] == '=') {
-            void *p = malloc(sizeof(char));
-            if (p == NULL) {
-                printf("Memory allocation failed\n");
-                return 1;
-            }
-            add[x] = p;
-            d[x] = c;
-            printf("%c\t%p\tidentifier\n", c, p);
-            x++;
-        }
+    yyin = fopen("input.txt", "r");  // Open input file
+    if (!yyin) {
+        fprintf(stderr, "Error opening input file\n");
+        return 1;
     }
+
+    yyparse();  // Start parsing
+    fclose(yyin);  // Close input file
+    return 0;
 }
-printf("\nThe symbol to be searched: ");
-getchar(); 
-srch = getchar();
-for (i = 0; i < x; i++) { 
-    if (srch == d[i]) {
-        printf("Symbol Found\n");
-        printf("%c@address %p\n", srch, add[i]);
-        flag = 1;
-        break; 
-    }
+
+void yyerror(char *s) {
+    fprintf(stderr, "Error: %s\n", s);  // Error handling
 }
-if (flag == 0)
-    printf("Symbol Not Found\n");
-for (i = 0; i < x; i++) { 
-    free(add[i]);
-}
-return 0;
-}
+
 ```
+## INPUT
+```
+
+int x,y
+```
+
 
 ## OUTPUT 
-![12](https://github.com/user-attachments/assets/c2dfe59d-f840-4aa3-a88b-191ea0ba4fe5)
+![image](https://github.com/user-attachments/assets/5710ff01-e653-4908-ab8e-b7a42516c3d0)
 
 ## RESULT
-The program to implement a symbol table is executed and the output is verified.
+A  YACC program to recognize a valid variable which starts with a letter followed by any number of letters or digits is executed successfully and the output is verified.
+
+
